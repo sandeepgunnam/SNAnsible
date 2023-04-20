@@ -1,0 +1,19 @@
+- name: Remediate CVE
+  hosts: all
+  vars:
+    package_name: kernel
+    version_number: 3.10.0
+  tasks:
+    - name: Install updated package
+      apt:
+        name: "{{ package_name }}"
+        state: latest
+
+    - name: Verify package version
+      command: dpkg -s {{ package_name }} | grep Version | awk '{print $2}'
+      register: package_version
+
+    - name: Fail if package version is not correct
+      fail:
+        msg: "Package version is incorrect"
+      when: package_version.stdout != "{{ version_number }}"
