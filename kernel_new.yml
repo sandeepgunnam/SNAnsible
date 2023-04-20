@@ -9,13 +9,13 @@
       yum:
         name: kernel
         state: latest
-      when: "'{{ kernel_version }}' not in ansible_kernel"
+      when: kernel_version not in ansible_kernel
 
     - name: Reboot host if kernel package was updated
       reboot:
-      when: "'{{ kernel_version }}' not in ansible_kernel"
+      when: kernel_version not in ansible_kernel
 
     - name: Fail if kernel package version is incorrect
       assert:
-        that: "'{{ kernel_version }}' in ansible_kernel"
+        that: kernel_version in ansible_kernel
         msg: "Kernel version is incorrect, expected '{{ kernel_version }}' but found '{{ ansible_kernel }}'"
