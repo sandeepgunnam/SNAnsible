@@ -1,19 +1,21 @@
-- name: Remediate CVE
+---
+- name: Remediate CVE for kernel package
   hosts: all
+  become: true
   vars:
-    package_name: kernel
-    version_number: 3.10.0
+    kernel_version: "3.10.0"
   tasks:
-    - name: Install updated package
-      apt:
-        name: "{{ package_name }}"
+    - name: Update kernel package
+      yum:
+        name: kernel
         state: latest
+      when: "'{{ kernel_version }}' not in ansible_kernel"
 
-    - name: Verify package version
-      command: dpkg -s {{ package_name }} | grep Version | awk '{print $2}'
-      register: package_version
+    - name: Reboot host if kernel package was updated
+      reboot:
+      when: "'{{ kernel_version }}' not in ansible_kernel"
 
-    - name: Fail if package version is not correct
-      fail:
-        msg: "Package version is incorrect"
-      when: package_version.stdout != "{{ version_number }}"
+    - name: Fail if kernel package version is incorrect
+      assert:
+        that: "'{{ kernel_version }}' in ansible_kernel"
+        msg: "Kernel version is incorrect, expected '{{ kernel_version }}' but found '{{ ansible_kernel }}'"
