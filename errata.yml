@@ -1,6 +1,6 @@
 ---
 - name: Update openssh package
-  hosts: target_system
+  hosts: all
   become: yes
 
   tasks:
