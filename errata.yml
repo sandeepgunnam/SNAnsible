@@ -1,0 +1,9 @@
+---
+- name: Apply RHSA-2019:2143 errata
+  hosts: all
+  become: yes
+  vars:
+    errata_id: RHSA-2019:2143
+
+  tasks:
+    - name: Check if the errata is already applied
